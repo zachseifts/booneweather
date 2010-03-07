@@ -47,5 +47,4 @@ class BooneWeather(TwitterBot):
 
 if __name__ == '__main__':
     bw = BooneWeather()
-    print bw.tweet
 
