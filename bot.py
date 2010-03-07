@@ -29,7 +29,6 @@ class Weather(object):
         resp, content = h.request('http://weather.yahooapis.com/forecastrss?w=12769767')
         status = resp.get('status', None)
         if (status and status is not None):
-            log.info('got conditions...')
             dom = parseString(content)
             conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
             temp = conditions.getAttribute('temp')
