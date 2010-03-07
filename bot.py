@@ -63,7 +63,8 @@ class BooneWeather(TwitterBot):
 
 
 config = ConfigParser()
-config.read('settings.conf')
+base_path = os.path.dirname(os.path.abspath(__file__))
+config.read(os.path.join(base_path,'settings.conf'))
 username=config.get('twitter', 'username')
 password=config.get('twitter', 'password')
 pickle_file = config.get('cache', 'picklefile')
