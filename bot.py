@@ -3,12 +3,14 @@
 ''' @booneweather twitter bot.
 '''
 
+import logging
+from ConfigParser import ConfigParser
+
 from random import choice
 from xml.dom.minidom import parseString
 
 from tweetbot.bot import TwitterBot
 from httplib2 import Http
-import private
 
 
 class Weather(object):
@@ -36,7 +38,7 @@ class BooneWeather(TwitterBot):
     ''' A twitter bot that tweets the current weather conditions in Boone, NC.
     '''
 
-    def __init__(self, username=private.USER, password=private.PASSWD):
+    def __init__(self, username, password):
         super(BooneWeather, self).__init__(username=username, password=password)
         self.weather = Weather()
         self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
@@ -46,5 +48,9 @@ class BooneWeather(TwitterBot):
 
 
 if __name__ == '__main__':
-    bw = BooneWeather()
+    config = ConfigParser()
+    config.read('settings.conf')
+    username=config.get('twitter', 'username')
+    password=config.get('twitter', 'password')
+    bw = BooneWeather(username=username, password=password)
 
