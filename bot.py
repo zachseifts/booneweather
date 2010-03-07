@@ -3,12 +3,14 @@
 ''' @booneweather twitter bot.
 '''
 
+import logging
+from ConfigParser import ConfigParser
+
 from random import choice
 from xml.dom.minidom import parseString
 
 from tweetbot.bot import TwitterBot
 from httplib2 import Http
-import private
 
 
 class Weather(object):
@@ -16,15 +18,18 @@ class Weather(object):
     '''
 
     def __init__(self):
+        log = logging.getLogger('%s.Weather.__init__()' % (__file__))
         self.temp, self.conds = self.conditions()
 
     def conditions(self):
         ''' Returns the current conditions.'''
+        log = logging.getLogger('%s.Weather.conditions()' % (__file__))
         h = Http('.cache')
         WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
         resp, content = h.request('http://weather.yahooapis.com/forecastrss?w=12769767')
         status = resp.get('status', None)
         if (status and status is not None):
+            log.info('got conditions...')
             dom = parseString(content)
             conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
             temp = conditions.getAttribute('temp')
@@ -36,7 +41,8 @@ class BooneWeather(TwitterBot):
     ''' A twitter bot that tweets the current weather conditions in Boone, NC.
     '''
 
-    def __init__(self, username=private.USER, password=private.PASSWD):
+    def __init__(self, username, password):
+        log = logging.getLogger('%s.BooneWeather.__init__()' % (__file__))
         super(BooneWeather, self).__init__(username=username, password=password)
         self.weather = Weather()
         self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
@@ -46,5 +52,15 @@ class BooneWeather(TwitterBot):
 
 
 if __name__ == '__main__':
-    bw = BooneWeather()
+    config = ConfigParser()
+    config.read('settings.conf')
+    username=config.get('twitter', 'username')
+    password=config.get('twitter', 'password')
+    format = '%(asctime)s %(name)-25s %(levelname)-8s %(message)s'
+    logging.basicConfig(level=config.get('logging', 'level'),
+                        format=format,
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename=config.get('logging', 'file'),
+                        filemode='w')
+    bw = BooneWeather(username=username, password=password)
 
