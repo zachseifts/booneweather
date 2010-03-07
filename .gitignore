@@ -5,3 +5,4 @@
 tmp/**/*
 .cache/
 settings.conf
+*.log
