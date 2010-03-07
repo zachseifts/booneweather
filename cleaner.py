@@ -22,4 +22,5 @@ config.read('settings.conf')
 if __name__ == '__main__':
     cleaner = Cleaner()
     cleaner.delete_pickles()
+    print os.path.dirname(os.path.abspath(__file__))
 
