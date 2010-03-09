@@ -1,4 +1,3 @@
-import logging
 import pickle
 import sys
 from xml.dom.minidom import parseString
@@ -19,12 +18,10 @@ class Weather(object):
     '''
 
     def __init__(self):
-        log = logging.getLogger('%s.Weather.__init__()' % (__file__))
         self.temp, self.conds = self.conditions()
 
     def conditions(self):
         ''' Returns the current conditions.'''
-        log = logging.getLogger('%s.Weather.conditions()' % (__file__))
         WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
         h = Http('.cache')
         resp, content = h.request('http://weather.yahooapis.com/forecastrss?w=12769767')
@@ -43,7 +40,6 @@ class BooneWeather(TwitterBot):
     '''
 
     def __init__(self, username, password):
-        log = logging.getLogger('%s.BooneWeather.__init__()' % (__file__))
         super(BooneWeather, self).__init__(username=username, password=password)
         # get the weather info from the pickle
         f = open(config.conditions, 'rb')
