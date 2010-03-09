@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from ConfigParser import ConfigParser
+import private
 
 class Cleaner(object):
     ''' Cleans various stuff around teh bot.'''
@@ -11,13 +11,9 @@ class Cleaner(object):
 
     def delete_pickles(self):
         '''Removes the old pickle files.'''
-        pickle_file = config.get('cache', 'picklefile')
+        pickle_file = private.PICKLEFILE
         if os.path.exists(pickle_file):
             os.remove(pickle_file)
-
-
-config = ConfigParser()
-config.read('settings.conf')
 
 if __name__ == '__main__':
     cleaner = Cleaner()
