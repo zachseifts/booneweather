@@ -31,17 +31,11 @@ class Weather(object):
         ''' Returns the current conditions.'''
         log = logging.getLogger('%s.Weather.conditions()' % (__file__))
         WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
-        if os.path.exists(pickle_file):
-            pfile = open(pickle_file, 'rb')
-            content = pickle.load(pfile)
-        else:
-            h = Http('.cache')
-            resp, content = h.request('http://weather.yahooapis.com/forecastrss?w=12769767')
-            status = resp.get('status', None)
-            if (not status and status is not None):
-                raise BadHTTPStatusException, 'status returned is ' % (status)
-            pfile = open(pickle_file, 'w')
-            pickle.dump(content, pfile)
+        h = Http('.cache')
+        resp, content = h.request('http://weather.yahooapis.com/forecastrss?w=12769767')
+        status = resp.get('status', None)
+        if (not status and status is not None):
+            raise BadHTTPStatusException, 'status returned is ' % (status)
         dom = parseString(content)
         conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
         temp = conditions.getAttribute('temp')
