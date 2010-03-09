@@ -1,4 +1,2 @@
-BeautifulSoup
 httplib2
-python-twitter
-simplejson
+tweetbot
