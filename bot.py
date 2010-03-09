@@ -6,13 +6,14 @@
 import os
 import logging
 import pickle
-from ConfigParser import ConfigParser
 
 from random import choice
 from xml.dom.minidom import parseString
 
-from tweetbot.bot import TwitterBot
 from httplib2 import Http
+from tweetbot.bot import TwitterBot
+
+import private
 
 
 class BadHTTPStatusException(Exception): pass
@@ -62,19 +63,16 @@ class BooneWeather(TwitterBot):
         self.post(self.tweet)
 
 
-config = ConfigParser()
-base_path = os.path.dirname(os.path.abspath(__file__))
-config.read(os.path.join(base_path,'settings.conf'))
-username=config.get('twitter', 'username')
-password=config.get('twitter', 'password')
-pickle_file = config.get('cache', 'picklefile')
+username = private.USERNAME
+password = private.PASSWORD
+pickle_file = private.PICKLEFILE
 
 if __name__ == '__main__':
     format = '%(asctime)s %(name)-25s %(levelname)-8s %(message)s'
-    logging.basicConfig(level=config.get('logging', 'level'),
+    logging.basicConfig(level=private.LEVEL,
                         format=format,
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=config.get('logging', 'file'),
+                        filename=private.FILE,
                         filemode='w')
     bw = BooneWeather(username=username, password=password)
 
