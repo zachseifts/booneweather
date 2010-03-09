@@ -1,10 +1,15 @@
 import logging
+import pickle
+import sys
 from xml.dom.minidom import parseString
 from random import choice
 
 from httplib2 import Http
 from tweetbot.bot import TwitterBot
 
+
+sys.path.append('/Users/zach/dev/booneweather')
+from etc import config
 
 class BadHTTPStatusException(Exception): pass
 
@@ -40,11 +45,13 @@ class BooneWeather(TwitterBot):
     def __init__(self, username, password):
         log = logging.getLogger('%s.BooneWeather.__init__()' % (__file__))
         super(BooneWeather, self).__init__(username=username, password=password)
-        self.weather = Weather()
+        # get the weather info from the pickle
+        f = open(config.conditions, 'rb')
+        self.weather = pickle.load(f)
+        f.close()
         self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
         self.name = choice(self.boone_names)
         self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
         self.post(self.tweet)
-
 
 
