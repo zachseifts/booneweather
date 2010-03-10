@@ -5,7 +5,9 @@ import inspect
 import pickle
 
 from lib.objects import Weather
+from lib.handlers import DirectMessageHandler
 
+import private
 from etc import config
 
 
@@ -33,6 +35,12 @@ class Jobs(object):
         f = open(config.conditions, 'w')
         pickle.dump(w, f)
         f.close()
+
+    def job_handle_direct_messages(self):
+        ''' Handles sending and recieving direct messages. '''
+        handler = DirectMessageHandler(private.USERNAME,
+                                       private.PASSWORD)
+        
 
 
 if __name__ == '__main__':
