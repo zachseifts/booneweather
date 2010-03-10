@@ -10,7 +10,11 @@ from etc import config
 
 
 class Jobs(object):
-    ''' Things that do stuff.'''
+    ''' Jobs that are run by a cron job. 
+    
+    Be aware that every time you run this script it will make api calls
+    to twitter. 
+    '''
 
     def __init__(self):
         ''' Starts each job automatically.
