@@ -43,12 +43,15 @@ class BooneWeather(TwitterBot):
     def __init__(self, username, password):
         super(BooneWeather, self).__init__(username=username, password=password)
         # get the weather info from the pickle
-        f = open(config.conditions, 'rb')
-        self.weather = pickle.load(f)
-        f.close()
-        self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
-        self.name = choice(self.boone_names)
-        self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
-        self.post(self.tweet)
+        try:
+            f = open(config.conditions, 'rb')
+            self.weather = pickle.load(f)
+            f.close()
+            self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
+            self.name = choice(self.boone_names)
+            self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
+            self.post(self.tweet)
+        except IOError:
+            pass
 
 
