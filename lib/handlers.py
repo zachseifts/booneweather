@@ -16,7 +16,7 @@ class DirectMessageHandler(object):
     def respond(self):
         ''' Responds to each direct message. '''
         for m in self.messages:
-            message = 'hey there!'
+            message = 'wait, this works???? (not yet, but soon)'
             user = m.sender_screen_name
             self.api.PostDirectMessage(user, message)
 
