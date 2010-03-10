@@ -13,12 +13,10 @@ class Jobs(object):
     ''' Things that do stuff.'''
 
     def __init__(self):
-        self.runner()
+        ''' Starts each job automatically.
 
-    def runner(self):
-        ''' Runs jobs added to this object.
-
-            To register a job create a method that starts with `job_` your action.
+        To create a new job, prefix the function with `job_` and it will
+        be picked up by the parser.
         '''
         [getattr(self, x)() for (x,y) in inspect.getmembers(self) if x.startswith('job_')]
 
