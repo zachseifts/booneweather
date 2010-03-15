@@ -1,4 +1,5 @@
 import twitter
+from urllib2 import HTTPError
 
 class DirectMessageHandler(object):
     ''' Handles direct messages '''
@@ -10,7 +11,10 @@ class DirectMessageHandler(object):
 
     def get_messages(self):
         ''' Gets a list of the direct messages. '''
-        self.messages = self.api.GetDirectMessages()
+        try:
+            self.messages = self.api.GetDirectMessages()
+        except HTTPError:
+            pass
 
     def respond(self):
         ''' Responds to each direct message and deletes it. '''
