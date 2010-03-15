@@ -55,7 +55,7 @@ class BooneWeather(TwitterBot):
             # Hacky way to do this, but it refreshes the weather and trys to
             # post the weather again. Might loop out or something.
             from jobs import Jobs
-            jobs = Jobs(no_run=True)
+            jobs = Jobs(no_auto_run=True)
             jobs.job_update_weather()
             self.__init__(username=username, password=password)
 

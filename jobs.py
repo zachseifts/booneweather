@@ -25,7 +25,7 @@ class Jobs(object):
         To create a new job, prefix the function with `job_` and it will
         be picked up by the parser.
         '''
-        if not kwargs.get('no_run'):
+        if not kwargs.get('no_auto_run'):
             [getattr(self, x)() for (x,y) in inspect.getmembers(self) if x.startswith('job_')]
 
     def job_update_weather(self):
