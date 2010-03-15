@@ -32,6 +32,8 @@ class Jobs(object):
         ''' Refreshes the pickle object that contains all of the weather
         conditions.'''
         r = redis.Redis()
+        if len(r.lrange('weather', 0, 20)) > 10:
+            r.delete('weather')
         weather_pickle = pickle.dumps(Weather(), protocol=2)
         r.lpush('weather', weather_pickle)
 
