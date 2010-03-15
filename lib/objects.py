@@ -19,7 +19,7 @@ class Weather(object):
     '''
 
     def __init__(self):
-        self.temp, self.conds = self.conditions()
+        self.conditions()
 
     def conditions(self):
         ''' Returns the current conditions.'''
@@ -31,9 +31,12 @@ class Weather(object):
             raise BadHTTPStatusException, 'status returned is ' % (status)
         dom = parseString(content)
         conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
-        temp = conditions.getAttribute('temp')
-        cond = conditions.getAttribute('text').lower()
-        return (temp, cond)
+        self.temp = conditions.getAttribute('temp')
+        self.conds = conditions.getAttribute('text').lower()
+        tomorrow = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
+        self.tom_cond = tomorrow.getAttribute('text').lower()
+        self.tom_high = tomorrow.getAttribute('high')
+        self.tom_low = tomorrow.getAttribute('low')
 
 
 class BooneWeather(TwitterBot):
@@ -49,7 +52,12 @@ class BooneWeather(TwitterBot):
             f.close()
             self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
             self.name = choice(self.boone_names)
-            self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
+            self.tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F'
+            self.tweet = self.tweet % (self.weather.temp,
+                                       self.weather.conds,
+                                       self.name,
+                                       self.weather.tom_high,
+                                       self.weather.tom_low)
             self.post(self.tweet)
         except IOError:
             pass
