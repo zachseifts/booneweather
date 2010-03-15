@@ -5,12 +5,14 @@ from random import choice
 
 from httplib2 import Http
 from tweetbot.bot import TwitterBot
+import redis
 
 
 sys.path.append('/Users/zach/dev/booneweather')
 from etc import config
 
 class BadHTTPStatusException(Exception): pass
+class NoWeatherInRedis(Exception): pass
 
 
 class Weather(object):
@@ -41,16 +43,20 @@ class BooneWeather(TwitterBot):
 
     def __init__(self, username, password):
         super(BooneWeather, self).__init__(username=username, password=password)
-        # get the weather info from the pickle
+        r = redis.Redis()
         try:
-            f = open(config.conditions, 'rb')
-            self.weather = pickle.load(f)
-            f.close()
+            weather = r.lrange('weather', 0, 0)[0]
+            self.weather = pickle.loads(weather)
             self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
             self.name = choice(self.boone_names)
             self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
             self.post(self.tweet)
-        except IOError:
-            pass
+        except TypeError:
+            # Hacky way to do this, but it refreshes the weather and trys to
+            # post the weather again. Might loop out or something.
+            from jobs import Jobs
+            jobs = Jobs(no_run=True)
+            jobs.job_update_weather()
+            self.__init__(username=username, password=password)
 
 
