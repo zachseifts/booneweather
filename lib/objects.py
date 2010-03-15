@@ -42,7 +42,6 @@ class BooneWeather(TwitterBot):
     '''
 
     def __init__(self, username, password):
-        super(BooneWeather, self).__init__(username=username, password=password)
         r = redis.Redis()
         try:
             weather = r.lrange('weather', 0, 0)[0]
@@ -50,6 +49,7 @@ class BooneWeather(TwitterBot):
             self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
             self.name = choice(self.boone_names)
             self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
+            super(BooneWeather, self).__init__(username=username, password=password)
             self.post(self.tweet)
         except TypeError:
             # Hacky way to do this, but it refreshes the weather and trys to
