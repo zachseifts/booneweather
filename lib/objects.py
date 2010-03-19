@@ -61,5 +61,7 @@ class BooneWeather(TwitterBot):
             self.post(self.tweet)
         except IOError:
             pass
+        except ValueError:
+            pass
 
 
