@@ -2,7 +2,6 @@
 
 import os
 import inspect
-import pickle
 import redis
 
 from lib.objects import Weather
@@ -29,13 +28,14 @@ class Jobs(object):
             [getattr(self, x)() for (x,y) in inspect.getmembers(self) if x.startswith('job_')]
 
     def job_update_weather(self):
-        ''' Refreshes the pickle object that contains all of the weather
+        ''' Refreshes the redis set that contains all of the weather
         conditions.'''
-        r = redis.Redis()
-        if len(r.lrange('weather', 0, 20)) > 10:
-            r.delete('weather')
-        weather_pickle = pickle.dumps(Weather(), protocol=2)
-        r.lpush('weather', weather_pickle)
+        w = Weather()
+        r = redis.Redis('localhost')
+        r.set('weather:current:temp', w.temp)
+        r.set('weather:current:cond', w.cond)
+        r.set('weather:tomorrow:high', w.tom_high)
+        r.set('weather:tomorrow:low', w.tom_low)
 
     def job_handle_direct_messages(self):
         ''' Handles sending and recieving direct messages. '''

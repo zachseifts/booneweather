@@ -1,4 +1,3 @@
-import pickle
 import sys
 from xml.dom.minidom import parseString
 from random import choice
@@ -20,7 +19,7 @@ class Weather(object):
     '''
 
     def __init__(self):
-        self.temp, self.conds = self.conditions()
+        self.conditions()
 
     def conditions(self):
         ''' Returns the current conditions.'''
@@ -32,9 +31,12 @@ class Weather(object):
             raise BadHTTPStatusException, 'status returned is ' % (status)
         dom = parseString(content)
         conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
-        temp = conditions.getAttribute('temp')
-        cond = conditions.getAttribute('text').lower()
-        return (temp, cond)
+        tomorrow = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
+        self.temp = conditions.getAttribute('temp')
+        self.cond = conditions.getAttribute('text').lower()
+        self.tom_cond = tomorrow.getAttribute('text').lower()
+        self.tom_high = tomorrow.getAttribute('high')
+        self.tom_low = tomorrow.getAttribute('low')
 
 
 class BooneWeather(TwitterBot):
@@ -42,21 +44,15 @@ class BooneWeather(TwitterBot):
     '''
 
     def __init__(self, username, password):
+        super(BooneWeather, self).__init__(username=username, password=password)
         r = redis.Redis()
-        try:
-            weather = r.lrange('weather', 0, 0)[0]
-            self.weather = pickle.loads(weather)
-            self.boone_names = 'boonetana,booneville,boonetopia,booneberg'.split(',')
-            self.name = choice(self.boone_names)
-            self.tweet = 'Currently %s F and %s in %s' % (self.weather.temp, self.weather.conds, self.name)
-            super(BooneWeather, self).__init__(username=username, password=password)
+        temp = r.get('weather:current:temp')
+        cond = r.get('weather:current:cond')
+        tom_high = r.get('weather:tomorrow:high')
+        tom_low = r.get('weather:tomorrow:low')
+        if (temp or cond or tom_high or tom_low):
+            tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F'
+            name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
+            self.tweet = tweet % (temp, cond, name, tom_high, tom_low)
             self.post(self.tweet)
-        except TypeError:
-            # Hacky way to do this, but it refreshes the weather and trys to
-            # post the weather again. Might loop out or something.
-            from jobs import Jobs
-            jobs = Jobs(no_auto_run=True)
-            jobs.job_update_weather()
-            self.__init__(username=username, password=password)
-
 
