@@ -8,7 +8,7 @@ import redis
 
 
 sys.path.append('/Users/zach/dev/booneweather')
-sys.path.append('/home/zach/bots/booneweather/src/booneweather')
+sys.path.append('/home/bots/booneweather/src/booneweather')
 from etc import config
 
 class BadHTTPStatusException(Exception): pass
