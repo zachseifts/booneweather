@@ -1,4 +1,3 @@
 httplib2
 tweetbot
-qr
 redis
