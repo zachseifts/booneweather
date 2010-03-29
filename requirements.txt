@@ -1,2 +1,3 @@
 httplib2
 tweetbot
+redis
