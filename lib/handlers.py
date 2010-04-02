@@ -1,4 +1,5 @@
 import twitter
+import redis
 from urllib2 import HTTPError
 
 class DirectMessageHandler(object):
@@ -18,9 +19,27 @@ class DirectMessageHandler(object):
 
     def respond(self):
         ''' Responds to each direct message and deletes it. '''
+        import pdb
+        pdb.set_trace()
         for m in self.messages:
-            message = 'wait, this works???? (not yet, but soon)'
+            command = m.text.split(' ')
+            if len(command) > 2:
+                message = self.command_help()
+            if ['current', 'temp'] == command:
+                message = self.command_current_temp() 
+            else:
+                message = self.command_help()
             user = m.sender_screen_name
             self.api.PostDirectMessage(user, message)
             self.api.DestroyDirectMessage(m.id)
+
+    def command_help(self):
+        ''' Returns the help info to the user. '''
+        return 'oh noes! commands: current temp, help'
+
+    def command_current_temp(self):
+        ''' Returns the current conditions to the user.'''
+        r = redis.Redis('localhost')
+        temp = r.get('weather:current:temp')
+        return 'hey! the temp is %s' % (temp,)
 
