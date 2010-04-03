@@ -19,8 +19,6 @@ class DirectMessageHandler(object):
 
     def respond(self):
         ''' Responds to each direct message and deletes it. '''
-        import pdb
-        pdb.set_trace()
         for m in self.messages:
             command = m.text.split(' ')
             if len(command) > 2:
