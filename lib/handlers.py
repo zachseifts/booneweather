@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import twitter
 import redis
 from urllib2 import HTTPError
@@ -9,6 +11,12 @@ class DirectMessageHandler(object):
         self.api = twitter.Api(username=username, password=password)
         self.get_messages()
         self.respond()
+
+    def log(self, level, user, message):
+        ''' Creates a log entry everytime a dm is sent. '''
+        r = redis.Redis('localhost')
+        key = 'logs:booneweather:dm:%s' % (user,)
+        r.lpush(key, '%s | %s | %s' % (datetime.now(), level, message))
 
     def get_messages(self):
         ''' Gets a list of the direct messages. '''
@@ -29,6 +37,7 @@ class DirectMessageHandler(object):
                 message = self.command_help()
             user = m.sender_screen_name
             self.api.PostDirectMessage(user, message)
+            self.log('debug', user, 'Sent DM: %s' % (message,))
             self.api.DestroyDirectMessage(m.id)
 
     def command_help(self):
