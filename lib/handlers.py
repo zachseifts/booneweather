@@ -14,9 +14,12 @@ class DirectMessageHandler(object):
 
     def log(self, level, user, message):
         ''' Creates a log entry everytime a dm is sent. '''
+        now = datetime.now()
         r = redis.Redis('localhost')
+        key = 'logs.booneweather:dm:sent'
+        r.lpush(key, '%s | %s' % (now, user)
         key = 'logs:booneweather:dm:%s' % (user,)
-        r.lpush(key, '%s | %s | %s' % (datetime.now(), level, message))
+        r.lpush(key, '%s | %s | %s' % (now, level, message))
 
     def get_messages(self):
         ''' Gets a list of the direct messages. '''
