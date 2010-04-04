@@ -1,6 +1,7 @@
 import sys
 from xml.dom.minidom import parseString
 from random import choice
+from urllib2 import HTTPError
 
 from httplib2 import Http
 from tweetbot.bot import TwitterBot
@@ -55,5 +56,8 @@ class BooneWeather(TwitterBot):
             tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F'
             name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
             self.tweet = tweet % (temp, cond, name, tom_high, tom_low)
-            self.post(self.tweet)
+            try:
+                self.post(self.tweet)
+            except HTTPError:
+                pass
 
