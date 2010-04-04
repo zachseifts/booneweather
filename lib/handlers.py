@@ -2,7 +2,7 @@ from datetime import datetime
 
 import twitter
 import redis
-from urllib2 import HTTPError
+from urllib2 import HTTPError, URLError
 
 class DirectMessageHandler(object):
     ''' Handles direct messages '''
@@ -17,7 +17,7 @@ class DirectMessageHandler(object):
         now = datetime.now()
         r = redis.Redis('localhost')
         key = 'logs.booneweather:dm:sent'
-        r.lpush(key, '%s | %s' % (now, user)
+        r.lpush(key, '%s | %s' % (now, user))
         key = 'logs:booneweather:dm:%s' % (user,)
         r.lpush(key, '%s | %s | %s' % (now, level, message))
 
@@ -26,6 +26,8 @@ class DirectMessageHandler(object):
         try:
             self.messages = self.api.GetDirectMessages()
         except HTTPError:
+            pass
+        except URLError:
             pass
 
     def respond(self):
@@ -51,5 +53,5 @@ class DirectMessageHandler(object):
         ''' Returns the current conditions to the user.'''
         r = redis.Redis('localhost')
         temp = r.get('weather:current:temp')
-        return 'hey! the temp is %s' % (temp,)
+        return 'heyo! the temp is %s F.' % (temp,)
 
