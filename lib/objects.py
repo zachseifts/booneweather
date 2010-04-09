@@ -8,10 +8,6 @@ from tweetbot.bot import TwitterBot
 import redis
 
 
-sys.path.append('/Users/zach/dev/booneweather')
-sys.path.append('/home/bots/booneweather/src/booneweather')
-from etc import config
-
 class BadHTTPStatusException(Exception): pass
 class NoWeatherInRedis(Exception): pass
 
