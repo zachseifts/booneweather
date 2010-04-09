@@ -5,7 +5,7 @@
 
 import os
 
-from lib.objects import Weather, BooneWeather
+from lib.objects import BooneWeather
 
 import private
 
