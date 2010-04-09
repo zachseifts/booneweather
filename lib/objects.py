@@ -13,7 +13,7 @@ class NoWeatherInRedis(Exception): pass
 
 
 class Weather(object):
-    ''' The current weather conditions by zip code.
+    ''' The current weather conditions by yahoo area code.
     '''
 
     def __init__(self):
@@ -55,5 +55,6 @@ class BooneWeather(TwitterBot):
             try:
                 self.post(self.tweet)
             except HTTPError:
+                # fail whale ftw
                 pass
 
