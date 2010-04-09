@@ -8,16 +8,12 @@ from tweetbot.bot import TwitterBot
 import redis
 
 
-sys.path.append('/Users/zach/dev/booneweather')
-sys.path.append('/home/bots/booneweather/src/booneweather')
-from etc import config
-
 class BadHTTPStatusException(Exception): pass
 class NoWeatherInRedis(Exception): pass
 
 
 class Weather(object):
-    ''' The current weather conditions by zip code.
+    ''' The current weather conditions by yahoo area code.
     '''
 
     def __init__(self):
@@ -59,5 +55,6 @@ class BooneWeather(TwitterBot):
             try:
                 self.post(self.tweet)
             except HTTPError:
+                # fail whale ftw
                 pass
 
