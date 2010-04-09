@@ -7,7 +7,6 @@ from lib.objects import Weather
 from lib.handlers import DirectMessageHandler
 
 import private
-from etc import config
 
 
 class Jobs(object):
