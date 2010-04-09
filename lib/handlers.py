@@ -1,8 +1,9 @@
 from datetime import datetime
-
-import twitter
-import redis
 from urllib2 import HTTPError, URLError
+
+from twitter import Api
+from redis import Redis
+
 
 class DirectMessageHandler(object):
     ''' Handles direct messages '''
