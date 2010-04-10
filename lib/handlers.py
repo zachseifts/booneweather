@@ -1,22 +1,26 @@
+from sys import path
 from datetime import datetime
 from urllib2 import HTTPError, URLError
 
 from twitter import Api
-from redis import Redis
+
+path.append('/Users/zach/dev/booneweather')
+path.append('/home/bots/booneweather/src/booneweather')
+from lib.objects import RedisConnector
 
 
 class DirectMessageHandler(object):
     ''' Handles direct messages '''
 
     def __init__(self, username, password):
-        self.api = twitter.Api(username=username, password=password)
+        self.api = Api(username=username, password=password)
         self.get_messages()
         self.respond()
 
     def log(self, level, user, message):
         ''' Creates a log entry everytime a dm is sent. '''
         now = datetime.now()
-        r = redis.Redis('localhost')
+        r = RedisConnector(host='localhost')
         r.lpush('logs.booneweather:dm:sent', '%s | %s' % (now, user))
         r.lpush('logs:booneweather:dm:%s' % (user,),
                 '%s | %s | %s' % (now, level, message))
@@ -51,7 +55,7 @@ class DirectMessageHandler(object):
 
     def command_current_temp(self):
         ''' Returns the current conditions to the user.'''
-        r = redis.Redis('localhost')
+        r = RedisConnector(name='localhost')
         temp = r.get('weather:current:temp')
         return 'heyo! the temp is %s F.' % (temp,)
 
