@@ -26,6 +26,9 @@ class RedisConnector(object):
     def set(self, key, value):
         return self.redis.set(key, value)
 
+    def lpush(self, key, value):
+        return self.redis.lpush(key,value)
+
 
 class Weather(object):
     ''' The current weather conditions by yahoo area code.
