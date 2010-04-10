@@ -1,25 +1,29 @@
+from sys import path
 from datetime import datetime
-
-import twitter
-import redis
 from urllib2 import HTTPError, URLError
+
+from twitter import Api
+
+path.append('/Users/zach/dev/booneweather')
+path.append('/home/bots/booneweather/src/booneweather')
+from lib.objects import RedisConnector
+
 
 class DirectMessageHandler(object):
     ''' Handles direct messages '''
 
     def __init__(self, username, password):
-        self.api = twitter.Api(username=username, password=password)
+        self.api = Api(username=username, password=password)
+        self.r = RedisConnector(host='localhost')
         self.get_messages()
         self.respond()
 
     def log(self, level, user, message):
         ''' Creates a log entry everytime a dm is sent. '''
         now = datetime.now()
-        r = redis.Redis('localhost')
-        key = 'logs.booneweather:dm:sent'
-        r.lpush(key, '%s | %s' % (now, user))
-        key = 'logs:booneweather:dm:%s' % (user,)
-        r.lpush(key, '%s | %s | %s' % (now, level, message))
+        self.r.lpush('logs.booneweather:dm:sent', '%s | %s' % (now, user))
+        self.r.lpush('logs:booneweather:dm:%s' % (user,),
+                     '%s | %s | %s' % (now, level, message))
 
     def get_messages(self):
         ''' Gets a list of the direct messages. '''
@@ -38,6 +42,8 @@ class DirectMessageHandler(object):
                 message = self.command_help()
             if ['current', 'temp'] == command:
                 message = self.command_current_temp() 
+            elif ['current', 'precip'] == command:
+                message = self.command_current_precip()
             else:
                 message = self.command_help()
             user = m.sender_screen_name
@@ -51,7 +57,11 @@ class DirectMessageHandler(object):
 
     def command_current_temp(self):
         ''' Returns the current conditions to the user.'''
-        r = redis.Redis('localhost')
-        temp = r.get('weather:current:temp')
+        temp = self.r.get('weather:current:temp')
         return 'heyo! the temp is %s F.' % (temp,)
+
+    def command_current_precip(self):
+        """Returns the current precipitation in boone!"""
+        cond = self.r.get('weather:current:cond')
+        return 'yo there! it\'s currently %s in boone' % (cond,)
 
