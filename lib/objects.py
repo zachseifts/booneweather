@@ -12,6 +12,21 @@ class BadHTTPStatusException(Exception): pass
 class NoDataInRedis(Exception): pass
 
 
+class RedisConnector(object):
+    ''' Wrapper for the Redis connection.
+    '''
+
+    def __init__(self, **kwargs):
+        self.host = kwargs.get('host', 'localhost')
+        self.redis = Redis(self.host)
+
+    def get(self, key):
+        return self.redis.get(key)
+
+    def set(self, key, value):
+        return self.redis.set(key, value)
+
+
 class Weather(object):
     ''' The current weather conditions by yahoo area code.
     '''
@@ -30,7 +45,7 @@ class Weather(object):
         dom = parseString(content)
         conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
         tomorrow = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
-        r = Redis('localhost')
+        r = RedisConnector(host='localhost')
         r.set('weather:current:temp', conditions.getAttribute('temp'))
         r.set('weather:current:cond', conditions.getAttribute('text').lower())
         r.set('weather:tomorrow:high', tomorrow.getAttribute('high'))
@@ -43,7 +58,7 @@ class BooneWeather(TwitterBot):
 
     def __init__(self, username, password):
         super(BooneWeather, self).__init__(username=username, password=password)
-        r = Redis('localhost')
+        r = RedisConnector(host='localhost')
         temp = r.get('weather:current:temp')
         cond = r.get('weather:current:cond')
         tom_high = r.get('weather:tomorrow:high')
