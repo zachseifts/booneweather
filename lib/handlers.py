@@ -14,7 +14,7 @@ class DirectMessageHandler(object):
 
     def __init__(self, username, password):
         self.api = Api(username=username, password=password)
-        self.r = RedisConnector(host='localhost')
+        self.r = RedisConnector()
         self.get_messages()
         self.respond()
 
