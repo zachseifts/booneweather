@@ -48,7 +48,7 @@ class Weather(object):
         dom = parseString(content)
         conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
         tomorrow = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
-        r = RedisConnector(host='localhost')
+        r = RedisConnector()
         r.set('weather:current:temp', conditions.getAttribute('temp'))
         r.set('weather:current:cond', conditions.getAttribute('text').lower())
         r.set('weather:tomorrow:high', tomorrow.getAttribute('high'))
