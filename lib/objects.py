@@ -61,7 +61,7 @@ class BooneWeather(TwitterBot):
 
     def __init__(self, username, password):
         super(BooneWeather, self).__init__(username=username, password=password)
-        r = RedisConnector(host='localhost')
+        r = RedisConnector()
         temp = r.get('weather:current:temp')
         cond = r.get('weather:current:cond')
         tom_high = r.get('weather:tomorrow:high')
