@@ -71,7 +71,7 @@ class BooneWeather(TwitterBot):
             name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
             self.tweet = tweet % (temp, cond, name, tom_high, tom_low)
             try:
-                self.post(self.tweet)
+                self.post()
             except HTTPError:
                 # fail whale ftw
                 pass
