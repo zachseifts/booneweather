@@ -1,1 +1,2 @@
-@booneweather twitter bot.
+Follow me at http://twitter.com/booneweather
+

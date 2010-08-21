@@ -4,7 +4,6 @@ from random import choice
 from urllib2 import HTTPError
 
 from httplib2 import Http
-from tweetbot.bot import TwitterBot
 from redis import Redis
 
 
@@ -53,28 +52,4 @@ class Weather(object):
         r.set('weather:current:cond', conditions.getAttribute('text').lower())
         r.set('weather:tomorrow:high', tomorrow.getAttribute('high'))
         r.set('weather:tomorrow:low', tomorrow.getAttribute('low'))
-
-
-class BooneWeather(TwitterBot):
-    ''' A twitter bot that tweets the current weather conditions in Boone, NC.
-    '''
-
-    def __init__(self, username, password):
-        super(BooneWeather, self).__init__(username=username, password=password)
-        r = RedisConnector()
-        temp = r.get('weather:current:temp')
-        cond = r.get('weather:current:cond')
-        tom_high = r.get('weather:tomorrow:high')
-        tom_low = r.get('weather:tomorrow:low')
-        if (temp and cond and tom_high and tom_low):
-            tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F'
-            name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
-            self.tweet = tweet % (temp, cond, name, tom_high, tom_low)
-            try:
-                self.post(self.tweet)
-            except HTTPError:
-                # fail whale ftw
-                pass
-        else:
-            raise NoDataInRedis
 

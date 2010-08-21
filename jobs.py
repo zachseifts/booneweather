@@ -4,9 +4,6 @@ import os
 import inspect
 
 from lib.objects import Weather
-from lib.handlers import DirectMessageHandler
-
-import private
 
 
 class Jobs(object):
@@ -28,11 +25,6 @@ class Jobs(object):
     def job_update_weather(self):
         ''' Refreshes the weather. '''
         Weather()
-
-    def job_handle_direct_messages(self):
-        ''' Handles sending and recieving direct messages. '''
-        handler = DirectMessageHandler(private.USERNAME,
-                                       private.PASSWORD)
 
 
 if __name__ == '__main__':
