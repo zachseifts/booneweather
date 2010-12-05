@@ -67,9 +67,9 @@ class Weather(object):
         resp, content, dom = self.get_feed(self.wu_url)
         conditions = dom.getElementsByTagName('item')[0].getElementsByTagName('description')[0].firstChild.toxml()[9:]
         conditions = conditions.split('<img')[0].split('|')
-        self.r.set('weather:current:temp', conditions[0].split(': ')[1].split('&')[0])
-        self.r.set('weather:current:cond', conditions[3].split(': ')[1].split('&')[0])
-        self.r.set('weather:current:wind_direction', conditions[4].split(': ')[1].split('&')[0])
-        self.r.set('weather:current:wind_speed', conditions[5].split(': ')[1].split('&')[0])
+        self.r.set('weather:current:temp', conditions[0].split(': ')[1].split('&')[0].strip())
+        self.r.set('weather:current:cond', conditions[3].split(': ')[1].split('&')[0].lower().strip())
+        self.r.set('weather:current:wind_direction', conditions[4].split(': ')[1].split('&')[0].strip())
+        self.r.set('weather:current:wind_speed', conditions[5].split(': ')[1].split('&')[0].strip())
 
 
