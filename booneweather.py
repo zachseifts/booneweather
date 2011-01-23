@@ -19,10 +19,10 @@ class Main(object):
 
     def update(self):
         r = RedisConnector()
-        temp = r.get('weather:current:temp')
-        cond = r.get('weather:current:cond')
-        tom_high = r.get('weather:tomorrow:high')
-        tom_low = r.get('weather:tomorrow:low')
+        temp = r.get('booneweather:current:temp')
+        cond = r.get('booneweather:current:cond')
+        tom_high = r.get('booneweather:tomorrow:high')
+        tom_low = r.get('booneweather:tomorrow:low')
         if (temp and cond and tom_high and tom_low):
             tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F #boone'
             name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
