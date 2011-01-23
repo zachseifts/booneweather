@@ -4,7 +4,6 @@ from random import choice
 from urllib2 import HTTPError
 
 from httplib2 import Http
-from tweetbot.bot import TwitterBot
 from redis import Redis
 
 
@@ -31,50 +30,46 @@ class RedisConnector(object):
 
 
 class Weather(object):
-    ''' The current weather conditions by yahoo area code.
+    ''' The current conditions as Yahoo Weather and Weather Underground see them.
     '''
 
-    def __init__(self):
-        self.conditions()
+    def __init__(self, **kwargs):
+        self.r = kwargs.get('r', RedisConnector())
+        self.h = kwargs.get('h', Http('.cache'))
+        self.yahoo_url = kwargs.get('yahoo_url', 'http://weather.yahooapis.com/forecastrss?w=12769767')
+        self.wu_url = kwargs.get('wu_url', 'http://rss.wunderground.com/auto/rss_full/NC/Boone.xml?units=english')
+        self.get_wu_weather()
+        self.get_yahoo_weather()
 
-    def conditions(self):
-        ''' Returns the current conditions.'''
-        WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
-        h = Http('.cache')
-        resp, content = h.request('http://weather.yahooapis.com/forecastrss?w=12769767')
+    def get_feed(self, url):
+        ''' Gets a feed and parses it.
+        '''
+        resp, content = self.h.request(url)
         status = resp.get('status', None)
         if (not status and status is not None):
             raise BadHTTPStatusException, 'status returned is ' % (status)
         dom = parseString(content)
+        return resp, content, dom
+
+    def get_yahoo_weather(self):
+        ''' Gets the current conditions from Yahoo
+        '''
+        WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
+        resp, content, dom = self.get_feed(self.yahoo_url)
         conditions = dom.getElementsByTagNameNS(WEATHER_NS, 'condition')[0]
         tomorrow = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
-        r = RedisConnector()
-        r.set('weather:current:temp', conditions.getAttribute('temp'))
-        r.set('weather:current:cond', conditions.getAttribute('text').lower())
-        r.set('weather:tomorrow:high', tomorrow.getAttribute('high'))
-        r.set('weather:tomorrow:low', tomorrow.getAttribute('low'))
+        self.r.set('weather:tomorrow:high', tomorrow.getAttribute('high'))
+        self.r.set('weather:tomorrow:low', tomorrow.getAttribute('low'))
 
+    def get_wu_weather(self):
+        ''' Gets the current conditions from Weather Underground
+        '''
+        resp, content, dom = self.get_feed(self.wu_url)
+        conditions = dom.getElementsByTagName('item')[0].getElementsByTagName('description')[0].firstChild.toxml()[9:]
+        conditions = conditions.split('<img')[0].split('|')
+        self.r.set('weather:current:temp', conditions[0].split(': ')[1].split('&')[0].strip())
+        self.r.set('weather:current:cond', conditions[3].split(': ')[1].split('&')[0].lower().strip())
+        self.r.set('weather:current:wind_direction', conditions[4].split(': ')[1].split('&')[0].strip())
+        self.r.set('weather:current:wind_speed', conditions[5].split(': ')[1].split('&')[0].strip())
 
-class BooneWeather(TwitterBot):
-    ''' A twitter bot that tweets the current weather conditions in Boone, NC.
-    '''
-
-    def __init__(self, username, password):
-        super(BooneWeather, self).__init__(username=username, password=password)
-        r = RedisConnector()
-        temp = r.get('weather:current:temp')
-        cond = r.get('weather:current:cond')
-        tom_high = r.get('weather:tomorrow:high')
-        tom_low = r.get('weather:tomorrow:low')
-        if (temp and cond and tom_high and tom_low):
-            tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F'
-            name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
-            self.tweet = tweet % (temp, cond, name, tom_high, tom_low)
-            try:
-                self.post()
-            except HTTPError:
-                # fail whale ftw
-                pass
-        else:
-            raise NoDataInRedis
 
