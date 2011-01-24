@@ -32,6 +32,9 @@ class Main(object):
             except HTTPError:
                 # fail whale ftw
                 pass
+            except tweepy.error.TweepError:
+                # duplicate tweet.
+                pass
         else:
             raise NoDataInRedis
 
