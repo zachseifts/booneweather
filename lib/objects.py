@@ -56,7 +56,7 @@ class Weather(object):
         '''
         WEATHER_NS = 'http://xml.weather.yahoo.com/ns/rss/1.0'
         resp, content, dom = self.get_feed(self.yahoo_url)
-        today = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
+        today = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[0]
         tomorrow = dom.getElementsByTagNameNS(WEATHER_NS, 'forecast')[1]
         self.r.set('booneweather:tomorrow:high', tomorrow.getAttribute('high'))
         self.r.set('booneweather:tomorrow:low', tomorrow.getAttribute('low'))
