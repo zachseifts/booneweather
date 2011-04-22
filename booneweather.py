@@ -21,12 +21,14 @@ class Main(object):
         r = RedisConnector()
         temp = r.get('booneweather:current:temp')
         cond = r.get('booneweather:current:cond')
+        today_high = r.get('booneweather:today:high')
+        today_low = r.get('booneweather:today:low')
         tom_high = r.get('booneweather:tomorrow:high')
         tom_low = r.get('booneweather:tomorrow:low')
         if (temp and cond and tom_high and tom_low):
-            tweet = 'Currently %s F and %s in %s. Tomorrow: high %s F, low: %s F #boone #wncwx'
+            tweet = "It's %sF and %s in %s. Today's high %sF, low: %sF Tomorrow's high %sF, low: %sF #boone #wncwx"
             name = choice('boonetana,booneville,boonetopia,booneberg'.split(','))
-            self.tweet = tweet % (temp, cond, name, tom_high, tom_low)
+            self.tweet = tweet % (temp, cond, name, today_high, today_low, tom_high, tom_low)
             try:
                 self.api.update_status(self.tweet)
             except HTTPError:
@@ -37,7 +39,6 @@ class Main(object):
                 pass
         else:
             raise NoDataInRedis
-
 
 
 if __name__ == '__main__':
